@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khu Vườn Phát Âm Tiếng Trung</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --bg-gradient: linear-gradient(180deg, #E0F7FA 0%, #DCEDC8 100%);
+            --board-color: #8D6E63;
+            --board-border: #5D4037;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+        }
+
+        .phone-container {
+            width: 375px;
+            height: 700px;
+            background: #ffffffaa;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border: 8px solid #333;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2E7D32;
+        }
+        .score {
+            background: #FBC02D;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Bảng gỗ */
+        .display-board {
+            background: var(--board-color);
+            border: 6px solid var(--board-border);
+            border-radius: 25px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+            margin-bottom: 25px;
+        }
+        .pinyin {
+            font-size: 22px;
+            color: #FFF59D;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .hanzi {
+            font-size: 38px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+        .meaning {
+            font-size: 14px;
+            color: #E0E0E0;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+        .btn-audio {
+            background: #00E5FF;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.1s;
+        }
+        .btn-audio:active { transform: scale(0.9); }
+
+        /* Gấu trúc Panda */
+        .panda-section {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 12px;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .panda-avatar {
+            font-size: 50px;
+            margin-right: 10px;
+        }
+        .panda-bubble {
+            font-size: 13px;
+            color: #2E7D32;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        /* Khu vực Micro */
+        .mic-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+        }
+        .mic-btn {
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 75px;
+            height: 75px;
+            font-size: 32px;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(233, 30, 99, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .mic-btn.listening {
+            background: #E91E63;
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0.5); }
+            70% { box-shadow: 0 0 0 20px rgba(233, 30, 99, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0); }
+        }
+        .result-text {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #546E7A;
+            font-weight: 600;
+            min-height: 20px;
+        }
+
+        /* Bộ chọn cấp độ (Hạt mầm) */
+        .level-selector {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: auto;
+            padding-bottom: 10px;
+        }
+        .level-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .icon-circle {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 26px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .level-btn:hover .icon-circle { transform: scale(1.1); }
+        .level-btn span {
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #37474F;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-container">
+        <div class="header">
+            <div class="title">小花园 (Khu Vườn Nhỏ)</div>
+            <div class="score" id="score-board">⭐ 0 Điểm</div>
+        </div>
+
+        <div class="display-board">
+            <div class="pinyin" id="pinyin-display">píng guǒ</div>
+            <div class="hanzi" id="hanzi-display">苹果</div>
+            <div class="meaning" id="meaning-display">(Quả Táo)</div>
+            <button class="btn-audio" onclick="speakSample()">🔊</button>
+        </div>
+
+        <div class="panda-section">
+            <div class="panda-avatar">🐼</div>
+            <div class="panda-bubble" id="panda-msg">Chào bé! Hãy chọn hạt mầm để học nói nhé!</div>
+        </div>
+
+        <div class="mic-section">
+            <button class="mic-btn" id="mic-button" onclick="toggleListening()">🎙️</button>
+            <div class="result-text" id="result-display"></div>
+        </div>
+
+        <div class="level-selector">
+            <button class="level-btn" onclick="changeLevel('don')">
+                <div class="icon-circle" style="background: #FFB74D;">🌱</div>
+                <span>Từ Đơn</span>
+            </button>
+            <button class="level-btn" onclick="changeLevel('phuc')">
+                <div class="icon-circle" style="background: #AED581;">🌿</div>
+                <span>Từ Phức</span>
+            </button>
+            <button class="level-btn" onclick="changeLevel('cau')">
+                <div class="icon-circle" style="background: #F48FB1;">🌸</div>
+                <span>Câu Ngắn</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Dữ liệu học tập mẫu
+        const levelData = {
+            don: { hanzi: '苹', pinyin: 'píng', meaning: 'Táo (Luyện âm Píng)', match: '苹' },
+            phuc: { hanzi: '苹果', pinyin: 'píng guǒ', meaning: 'Quả Táo', match: '苹果' },
+            cau: { hanzi: '我想吃苹果', pinyin: 'wǒ xiǎng chī píng guǒ', meaning: 'Con muốn ăn táo.', match: '我想吃苹果' }
+        };
+
+        let currentLevel = 'phuc';
+        let score = 0;
+        let isListening = false;
+
+        // Cấu hình Nhận diện giọng nói Web Speech API
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.lang = 'zh-CN'; // Nhận diện tiếng Trung Phổ Thông
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onresult = (event) => {
+                const babySpeechResult = event.results[0][0].transcript;
+                document.getElementById('result-display').innerText = `Bé vừa nói: "${babySpeechResult}"`;
+                
+                const target = levelData[currentLevel].match;
+                // Kiểm tra xem giọng đọc của bé có khớp với từ mục tiêu không
+                if (babySpeechResult.includes(target) || target.includes(babySpeechResult)) {
+                    score += 10;
+                    document.getElementById('score-board').innerText = `⭐ ${score} Điểm`;
+                    document.getElementById('panda-msg').innerText = "Oa! Bé phát âm chuẩn quá! Khu vườn được cộng thêm 10 sao thưởng! 🌸🎉";
+                } else {
+                    document.getElementById('panda-msg').innerText = "Gần đúng rồi, bé ấn nút nói lại rõ ràng hơn thử xem sao nhé! 💪";
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error(event.error);
+                stopListening();
+            };
+
+            recognition.onend = () => {
+                stopListening();
+            };
+        } else {
+            alert("Trình duyệt này không hỗ trợ tính năng nhận diện giọng nói. Bạn hãy thử dùng Google Chrome nhé!");
+        }
+
+        // Hàm Đổi Cấp Độ (Từ đơn / Từ phức / Câu ngắn)
+        function changeLevel(level) {
+            currentLevel = level;
+            document.getElementById('pinyin-display').innerText = levelData[level].pinyin;
+            document.getElementById('hanzi-display').innerText = levelData[level].hanzi;
+            document.getElementById('meaning-display').innerText = `(${levelData[level].meaning})`;
+            document.getElementById('result-display').innerText = "";
+            document.getElementById('panda-msg').innerText = "Hạt mầm mới đã sẵn sàng! Ấn chiếc loa xanh để nghe cô phát âm mẫu nhé!";
+        }
+
+        // Hàm Phát Âm Mẫu (Text-to-Speech)
+        function speakSample() {
+            if ('speechSynthesis' in window) {
+                const text = levelData[currentLevel].hanzi;
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'zh-CN'; // Tiếng Trung
+                utterance.rate = 0.6;     // Đọc chậm rãi cho trẻ em dễ bắt chước
+                utterance.pitch = 1.3;    // Giọng cao, trong trẻo, dễ thương
+                
+                document.getElementById('panda-msg').innerText = "Bé chú ý lắng nghe cô đọc mẫu này... 🎧";
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Trình duyệt của bạn không hỗ trợ tính năng phát âm mẫu.");
+            }
+        }
+
+        // Hàm bật/tắt ghi âm giọng của bé
+        function toggleListening() {
+            if (!recognition) return;
+            if (!isListening) {
+                isListening = true;
+                document.getElementById('mic-button').classList.add('listening');
+                document.getElementById('panda-msg').innerText = "Cô đang nghe đây, bé đọc thật to lên nào! 🎙️";
+                document.getElementById('result-display').innerText = "Hệ thống đang nghe...";
+                recognition.start();
+            } else {
+                stopListening();
+                recognition.stop();
+            }
+        }
+
+        function stopListening() {
+            isListening = false;
+            document.getElementById('mic-button').classList.remove('listening');
+        }
+    </script>
+</body>
+</html>
